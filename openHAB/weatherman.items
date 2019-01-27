@@ -1,0 +1,21 @@
+Number:Temperature TempAussen "Aussentemperatur [%.1f °C]" <temperature> (gTemperature, gAussen) {expire="3m"}
+Number:Temperature TempAussenAvgYesterday "Aussentemperatur gestern [%.1f °C]" <temperature> (gAussen, gStoreEveryUpdate) {expire="3m"}
+
+Number:Dimensionless HumiAussen "Luftfeuchtigkeit Aussen [%.1f %%]" <humidity> (gHumidity, gAussen) {expire="3m"}
+Number:Pressure PressAussen "Luftdruck [%.2f hPa]" <pressure> (gPressure, gAussen, gStoreEveryUpdate) {expire="3m"}
+Number:Illuminance IlluAussen "Helligkeit [%.0f lux]" <sun> (gIlluminance, gAussen, gStoreEveryUpdate) {expire="3m"}
+
+Number:Time SunshineHoursToday "Sonnenstunden [%.1f h]" <time> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Number:Time SunshineHoursYesterday "Sonnenstunden gestern [%.1f h]" <time> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Switch SunIsShining "Sonne scheint" <sun_clouds> (gAussen, gStoreEveryUpdate) {expire="3m"}
+
+Number RainAmount "Regenmenge [%.1f mm/h]" <rain> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Number:Length RainAmountLast1Hour "Regenmenge 1h [%.1f mm]" <rain> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Number:Length RainAmountLast24Hours "Regenmenge 24h [%.1f mm]" <rain> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Number:Length RainAmountYesterday "Regenmenge gestern [%.1f mm]" <rain> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Switch IsRaining "Regen Status" <rain> (gAussen, gStoreEveryUpdate)  {expire="3m"}
+
+Number:Speed WindSpeedAvg "Windgeschwindigkeit [%.1f m/s]" <wind> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Number:Speed WindSpeedPeak "Windgeschwindigkeit Peak [%.1f m/s]" <wind> (gAussen, gStoreEveryUpdate) {expire="3m"}
+Number WindDirectionDeg "Windrichtung [%.0f °]" <wind> (gAussen, gStoreEveryUpdate) {expire="3m"}
+String WindDirectionStr "Windrichtung" <wind> (gAussen, gStoreEveryUpdate) {expire="3m"}

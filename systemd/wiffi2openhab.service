@@ -1,0 +1,12 @@
+[Unit]
+Description=Wiffi 2 openhab
+
+[Service]
+User=openhab
+Group=openhab
+ExecStart=/etc/openhab2/tools/wiffi2openhab.py
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
