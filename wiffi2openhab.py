@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import json
 import socketserver
+import datetime
 from openhab import OpenHAB
 
 class MyTCPHandler(socketserver.StreamRequestHandler):
@@ -21,16 +22,25 @@ class WiffiItem:
         self.homematic_name = homematic_name
         self.target_name = target_name
 
-    def convert_value(self, value):
-        return value
+    def convert_value(self, var):
+        if var['type'] == 'number':
+          return float(var['value'])
+        elif var['type'] == 'boolean':
+          return 'ON' if var['value'] else 'OFF'
+        elif var['type'] == 'string':
+          return var['value']
+        else:
+          print("can't convert unknown type {} for var {}".format(var['type'], var['name']))
+          raise
 
 
-class WiffiItemSwitch(WiffiItem):
-    def __init__(self, homematic_name, target_name):
-        WiffiItem.__init__(self, homematic_name, target_name)
-
-    def convert_value(self, value):
-        return 'ON' if value else 'OFF'
+# optional specialization for special types
+#class WiffiItemSwitch(WiffiItem):
+#    def __init__(self, homematic_name, target_name):
+#        WiffiItem.__init__(self, homematic_name, target_name)
+#
+#    def convert_value(self, value):
+#        return 'ON' if value else 'OFF'
 
 
 class Wiffi:
@@ -64,12 +74,12 @@ class Wiffi:
             for var in data['vars']:
                 if var['homematic_name'] in self.items:
                     item = self.items[var['homematic_name']]
-                    target.set_state(item.target_name, item.convert_value(var['value']))
+                    target.set_state(item.target_name, item.convert_value(var))
                 elif var['name'] in self.items:
                     item = self.items[var['name']]
-                    target.set_state(item.target_name, item.convert_value(var['value']))
+                    target.set_state(item.target_name, item.convert_value(var))
         except Exception as e:
-            print('EXCEPTION {}\n{}', repr(e), raw_data)
+            print('EXCEPTION {}\n{}'.format(repr(e), raw_data))
 
 
 class WiffiManager:
@@ -82,6 +92,7 @@ class WiffiManager:
         self.wiffis[wiffi.client_address] = wiffi
 
     def process(self, ip, data):
+        print(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f'))
         #print('RX {}: {}'.format(ip, data))
         if ip not in self.wiffis:
             print("wiffi with ip {ip:s} not found".format(ip=ip))
@@ -110,23 +121,20 @@ if __name__ == "__main__":
     # create wiffi instances
     mgr = WiffiManager(oh)
     mgr.add(Wiffi('192.168.0.40', 'weatherman', [
-        WiffiItem('w_temperature', 'TempAussen'),
-        WiffiItem('29', 'TempAussenAvgYesterday'),
-        WiffiItem('w_humidity', 'HumiAussen'),
+        WiffiItem('w_temperatur', 'TempAussen'),
+        WiffiItem('w_feuchte_rel', 'HumiAussen'),
         WiffiItem('w_barometer', 'PressAussen'),
         WiffiItem('w_lux', 'IlluAussen'),
-        WiffiItem('w_sonne_heute', 'SunshineHoursToday'),
-        WiffiItem('w_sonne_gestern', 'SunshineHoursYesterday'),
-        WiffiItemSwitch('w_sonne_scheint', 'SunIsShining'),
-        WiffiItem('w_rain_intensity', 'RainAmount'),
-        WiffiItem('w_rain_volume_1', 'RainAmountLast1Hour'),
-        WiffiItem('w_rain_volume_24', 'RainAmountLast24Hours'),
-        WiffiItem('w_rain_yesterday', 'RainAmountYesterday'),
-        WiffiItemSwitch('w_rain_status', 'IsRaining'),
-        WiffiItem('w_wind_avg', 'WindSpeedAvg'),
-        WiffiItem('w_wind_peak', 'WindSpeedPeak'),
+        WiffiItem('w_sonnenstunden_heute', 'SunshineHoursToday'),
+        WiffiItem('w_sonne_scheint', 'SunIsShining'),
+        WiffiItem('w_regenstaerke', 'RainAmount'),
+        WiffiItem('w_regen_letzte_h', 'RainAmountLast1Hour'),
+        WiffiItem('w_regen_mm_heute', 'RainAmountToday'),
+        WiffiItem('w_regenmelder', 'IsRaining'),
+        WiffiItem('w_wind_mittel', 'WindSpeedAvg'),
+        WiffiItem('w_wind_spitze', 'WindSpeedPeak'),
         WiffiItem('w_wind_dir', 'WindDirectionDeg'),
-        WiffiItem('w_wind_direction', 'WindDirectionStr'),
+        WiffiItem('w_wind_richtung', 'WindDirectionStr'),
     ]))
 
     # Create the server
