@@ -26,7 +26,7 @@ class WiffiItem:
         if var['type'] == 'number':
           return float(var['value'])
         elif var['type'] == 'boolean':
-          return 'ON' if var['value'] else 'OFF'
+          return 'ON' if var['value'] == "true" else 'OFF'
         elif var['type'] == 'string':
           return var['value']
         else:
@@ -134,7 +134,7 @@ if __name__ == "__main__":
         WiffiItem('w_wind_mittel', 'WindSpeedAvg'),
         WiffiItem('w_wind_spitze', 'WindSpeedPeak'),
         WiffiItem('w_wind_dir', 'WindDirectionDeg'),
-        WiffiItem('w_wind_richtung', 'WindDirectionStr'),
+        WiffiItem('w_windrichtung', 'WindDirectionStr'),
     ]))
 
     # Create the server
